@@ -30,3 +30,18 @@
 *.exe
 *.out
 *.app
+
+# JetBrains IDEs
+.idea/
+!.idea/codeStyles
+!.idea/runConfigurations
+
+# User-specific files
+*.iml
+*.ipr
+*.iws
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
