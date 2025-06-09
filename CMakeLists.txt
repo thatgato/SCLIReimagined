@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.31)
-project(SCLIReimagined)
+project(SCLI-R)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(SCLIReimagined main.cpp)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/exe)
+
+add_subdirectory(src)

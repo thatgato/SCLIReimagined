@@ -3,6 +3,7 @@
 // See the LICENSE file for more information.
 
 #include <iostream>
+#include "commands/TestCmd.hpp"
 
 int main() {
     auto lang1 = "C++";
@@ -10,6 +11,8 @@ int main() {
 
 
     for (int i = 1; i <= 5; i++) { std::cout << "i = " << i << std::endl; }
+
+    a();
 
     return 0;
 }
