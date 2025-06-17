@@ -6,23 +6,33 @@
 
 #pragma once
 #include <string>
+#include <unordered_map>
 
+
+// Made it top level so it's easily accessible from anywhere if this header is included
+enum class EColor { WHITE, GREEN, YELLOW, ORANGE, RED, CYAN, BLUE };
+
+struct RGB {
+    uint8_t r, g, b;
+};
 
 namespace Core {
     class Color {
         public:
-            enum class EColor { WHITE, GREEN, YELLOW, ORANGE, RED, CYAN, BLUE };
-
             // is it better to define enums here, or in the namespace...?
-            struct RGB {
-                int r, g, b;
-            };
 
-            [[nodiscard]] std::string Wrap(std::string &original, EColor color, bool background = false) noexcept;
+            [[nodiscard]] static std::string Wrap(const std::string &original, EColor color,
+                                                  bool background = false);
 
-            [[nodiscard]] std::string Wrap(std::string &original, RGB color, bool background = false) noexcept;
+            [[nodiscard]] static std::string Wrap(const std::string &original, RGB color, bool background = false);
 
         private:
-            [[nodiscard]] std::string getANSIColor(EColor color, bool forBackground = false) noexcept;
+            static const std::unordered_map<EColor, RGB> colorMap;
+
+            [[nodiscard]] static std::string getANSIColor(EColor color, bool forBackground = false);
+
+            [[nodiscard]] static std::string getANSIColor(RGB color, bool forBackground = false);
     };
+
+    #define CWRAP(string, color) Core::Color::Wrap(string, color)
 }

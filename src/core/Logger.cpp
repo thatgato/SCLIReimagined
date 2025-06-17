@@ -13,12 +13,34 @@
 
 #include "core/Logger.hpp"
 #include <chrono>
+#include <iostream>
 
 namespace Core {
     std::ofstream Logger::logFileStream;
     HANDLE Logger::hConsole = nullptr;
     std::mutex Logger::mtx;
     bool Logger::consoleEnabled = false;
+
+    const std::string conTitle                      = "SCLI LOGS";
+    std::unique_ptr<Process> Logger::consoleProcess = std::make_unique<Process>(const_cast<std::string &>(conTitle));
+
+    void Logger::Init(std::string logFilePath, bool createConsole) {
+        // TODO File logging
+        std::lock_guard<std::mutex> lock(mtx);
+
+
+        // Console logging
+        if (createConsole) {
+            if (!consoleProcess->Spawn("cmd.exe", "/k type CON")) {
+                throw std::runtime_error("Failed to spawn logger console");
+            }
+
+            consoleEnabled = true;
+        }
+    }
+
+    void Logger::Log(const std::string message, const std::string fileName, const std::string funcName,
+                     Level level) { writeToConsole(message); }
 
     std::string Logger::getTimestamp() {
         auto now        = std::chrono::system_clock::now();
@@ -30,7 +52,7 @@ namespace Core {
         return oss.str();
     }
 
-    std::string Logger::levelToStr(Level lvl) {
+    std::string Logger::levelToStr(Level lvl) noexcept {
         switch (lvl) {
             case Level::TRACE:
                 return "TRACE";
@@ -41,10 +63,22 @@ namespace Core {
             case Level::ERR:
                 return "ERROR";
         }
+        return "UNKNOWN";
     }
 
-    void Logger::Init(std::string &logFilePath, bool createConsole) {}
+    void Logger::writeToConsole(const std::string &message) {
+        if (!consoleProcess || !consoleProcess->IsRunning()) {
+            std::cout << "Attempt to write to console process that is not running" << std::endl;
+            return;
+        }
 
-    void Logger::Log(const std::string &message, const std::string &fileName, const std::string &funcName,
-                     Level level) {}
+        HANDLE hPipe = consoleProcess->GetWriteHandle();
+        if (hPipe == INVALID_HANDLE_VALUE) {
+            std::cout << "Invalid handle" << std::endl;
+            return;
+        }
+
+        DWORD bytesWritten;
+        WriteFile(hPipe, message.c_str(), message.size(), &bytesWritten, nullptr);
+    }
 }

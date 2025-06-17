@@ -3,39 +3,31 @@
 // See the LICENSE file for more information.
 
 #include <iostream>
-#include "core/Core.hpp"
 #include <windows.h>
+#include "core/Color.hpp"
+#include "core/Core.hpp"
+#include "core/Logger.hpp"
 
 int main() {
     std::cout << "Application starting..." << std::endl;
+
+    // Just to be sure!:)
+    HANDLE hOut  = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 
     //Core::Application app;
 
     //app.Startup(argc, argv);
 
-    // TODO Experiment with this snippet of code and the windows API
-    // to create a child process with a separate console window in
-    // order to create a logger on Core::Application::Startup()!
+    std::cout << CWRAP("afkdsnf", EColor::RED) << std::endl;
 
-    HANDLE childStdoutWrite = nullptr;
-    HANDLE childStdinRead   = nullptr;
+    Core::Logger::Init("");
 
-    STARTUPINFOA si{};
-    si.cb         = sizeof(STARTUPINFO);
-    si.hStdError  = childStdoutWrite;
-    si.hStdOutput = childStdoutWrite;
-    si.hStdInput  = childStdinRead;
-    si.dwFlags |= STARTF_USESTDHANDLES;
-    PROCESS_INFORMATION pi{};
-
-    std::string cmdLine = "cmd.exe";
-    CreateProcessA(NULL, const_cast<char *>(cmdLine.c_str()), NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL,
-                   NULL, &si,
-                   &pi);
+    Core::Logger::Log("What", "", "");
 
     std::cin.get();
-    TerminateProcess(pi.hProcess, 0);
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
+
     return 0;
 }
