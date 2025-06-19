@@ -41,7 +41,6 @@ namespace Core {
 
             static std::ofstream logFileStream;
             static std::mutex mtx; // thread safe because who knows what will happen in the future
-            static HANDLE hConsole;
             static bool consoleEnabled;
 
             static std::unique_ptr<Process> consoleProcess;

@@ -14,24 +14,30 @@
 
 
 namespace Core {
-    Process::Process(std::string &wTitle) : wTitle(wTitle) {
-        SECURITY_ATTRIBUTES saAttr;
-        saAttr.nLength              = sizeof(SECURITY_ATTRIBUTES);
-        saAttr.bInheritHandle       = TRUE;
-        saAttr.lpSecurityDescriptor = NULL;
-
-        if (!CreatePipe(&hStdinRead, &hStdinWrite, &saAttr, 0)) {
-            throw std::runtime_error("Failed to create pipe for process instance");
-        }
-    }
+    Process::Process(std::string &wTitle) : wTitle(wTitle) {}
 
     Process::~Process() { Kill(); }
 
     bool Process::Spawn(const std::string &pPath, const std::string &args) {
-        STARTUPINFOA si;
-        si.cb      = sizeof(STARTUPINFOA);
-        si.lpTitle = const_cast<char *>(wTitle.c_str());
-        si.dwFlags = STARTF_FORCEONFEEDBACK | STARTF_USESTDHANDLES;
+        SECURITY_ATTRIBUTES saAttr  = {0};
+        saAttr.nLength              = sizeof(SECURITY_ATTRIBUTES);
+        saAttr.bInheritHandle       = TRUE;
+        saAttr.lpSecurityDescriptor = nullptr;
+
+        if (!CreatePipe(&hStdinRead, &hStdinWrite, &saAttr, 0))
+            throw std::runtime_error("Stdin pipe creation failed");
+
+        SetHandleInformation(hStdinWrite, HANDLE_FLAG_INHERIT, 0);
+
+        STARTUPINFOA si = {0};
+        si.cb           = sizeof(STARTUPINFOA);
+        si.lpTitle      = const_cast<char *>(wTitle.c_str());
+        si.dwFlags |= STARTF_USESTDHANDLES;
+        si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+        si.hStdError  = GetStdHandle(STD_ERROR_HANDLE);
+        si.hStdInput  = hStdinRead;
+
+        pi = {0};
 
         std::string cmdLine = pPath + " " + args;
 
@@ -42,7 +48,7 @@ namespace Core {
                             nullptr,
                             nullptr,
                             TRUE,
-                            CREATE_NEW_CONSOLE,
+                            CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT,
                             nullptr,
                             nullptr,
                             &si,
@@ -51,7 +57,7 @@ namespace Core {
         return true;
     }
 
-    bool Process::IsRunning() {
+    bool Process::IsRunning() const {
         if (pi.hProcess == nullptr) return false;
 
         DWORD exitCode;

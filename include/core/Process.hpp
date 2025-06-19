@@ -11,7 +11,7 @@
 namespace Core {
     class Process {
         PROCESS_INFORMATION pi;
-        HANDLE hStdinRead, hStdinWrite;
+        HANDLE hStdinRead, hStdinWrite = nullptr;
         std::string wTitle;
 
         public:
@@ -21,7 +21,7 @@ namespace Core {
 
             bool Spawn(const std::string &pPath, const std::string &args = "");
 
-            bool IsRunning();
+            bool IsRunning() const;
 
             void Kill();
 
