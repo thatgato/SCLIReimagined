@@ -15,13 +15,13 @@ namespace Core {
         std::string wTitle;
 
         public:
-            explicit Process(std::string &wTitle);
+            explicit Process(const std::string &wTitle);
 
             ~Process();
 
             bool Spawn(const std::string &pPath, const std::string &args = "");
 
-            bool IsRunning();
+            bool IsRunning() const;
 
             void Kill();
 

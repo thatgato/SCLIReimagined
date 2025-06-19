@@ -14,11 +14,11 @@
 
 
 namespace Core {
-    Process::Process(std::string &wTitle) : wTitle(wTitle) {
+    Process::Process(const std::string &wTitle) : pi(), wTitle(wTitle) {
         SECURITY_ATTRIBUTES saAttr;
         saAttr.nLength              = sizeof(SECURITY_ATTRIBUTES);
         saAttr.bInheritHandle       = TRUE;
-        saAttr.lpSecurityDescriptor = NULL;
+        saAttr.lpSecurityDescriptor = nullptr;
 
         if (!CreatePipe(&hStdinRead, &hStdinWrite, &saAttr, 0)) {
             throw std::runtime_error("Failed to create pipe for process instance");
@@ -51,7 +51,7 @@ namespace Core {
         return true;
     }
 
-    bool Process::IsRunning() {
+    bool Process::IsRunning() const {
         if (pi.hProcess == nullptr) return false;
 
         DWORD exitCode;

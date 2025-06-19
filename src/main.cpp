@@ -21,10 +21,12 @@ int main() {
 
     //app.Startup(argc, argv);
 
+    // testing purposes
+
     std::cout << CWRAP("afkdsnf", EColor::RED) << std::endl;
 
+    // TODO ONE OR BOTH OF THESE LINES CAUSE A COMPILE CRASH
     Core::Logger::Init("");
-
     Core::Logger::Log("What", "", "");
 
     std::cin.get();

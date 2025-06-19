@@ -19,15 +19,16 @@ namespace Core {
     std::ofstream Logger::logFileStream;
     HANDLE Logger::hConsole = nullptr;
     std::mutex Logger::mtx;
-    bool Logger::consoleEnabled = false;
-
-    const std::string conTitle                      = "SCLI LOGS";
-    std::unique_ptr<Process> Logger::consoleProcess = std::make_unique<Process>(const_cast<std::string &>(conTitle));
+    bool Logger::consoleEnabled                     = false;
+    std::unique_ptr<Process> Logger::consoleProcess = nullptr;
 
     void Logger::Init(std::string logFilePath, bool createConsole) {
         // TODO File logging
         std::lock_guard<std::mutex> lock(mtx);
 
+        std::string conTitle = "SCLI LOGS";
+
+        if (consoleProcess == nullptr) { consoleProcess = std::make_unique<Process>(conTitle); }
 
         // Console logging
         if (createConsole) {
