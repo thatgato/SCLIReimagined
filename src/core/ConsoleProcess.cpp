@@ -16,7 +16,7 @@
 
 
 namespace Core {
-    ConsoleProcess::ConsoleProcess(std::string &wTitle) : wTitle(wTitle) {}
+    ConsoleProcess::ConsoleProcess(std::string &wTitle) : pi(), hStdinRead(nullptr), wTitle(wTitle) {}
 
     ConsoleProcess::~ConsoleProcess() { Kill(); }
 
@@ -56,6 +56,9 @@ namespace Core {
                             &si,
                             &pi
                            )) { return false; }
+
+        this->Write("prompt $e");
+        this->Write("cls");
         return true;
     }
 

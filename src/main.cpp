@@ -7,6 +7,7 @@
 #include "core/Color.hpp"
 #include "core/Core.hpp"
 #include "core/Logger.hpp"
+#include "core/LogMessages.hpp"
 
 int main() {
     std::cout << "Application starting..." << std::endl;
@@ -26,6 +27,7 @@ int main() {
     Core::Logger::Init("");
 
     Core::Logger::Log(CWRAP("awwwwwwwwwwwwwwwwwwwwww", EColor::CYAN), "", "");
+    Core::Logger::Log(LogMsg::Example, "", "");
 
     std::cin.get();
 

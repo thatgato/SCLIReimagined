@@ -36,8 +36,7 @@ namespace Core {
                 std::cout << "fuck" << std::endl;
                 throw std::runtime_error("Failed to spawn logger console");
             }
-            consoleProcess->Write("prompt $e");
-            consoleProcess->Write("cls");
+
 
             Logger::Log("AAAAAAAA", "", "");
 
