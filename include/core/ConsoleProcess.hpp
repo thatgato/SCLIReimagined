@@ -9,22 +9,22 @@
 #include <windows.h>
 
 namespace Core {
-    class Process {
+    class ConsoleProcess {
         PROCESS_INFORMATION pi;
         HANDLE hStdinRead, hStdinWrite = nullptr;
         std::string wTitle;
 
         public:
-            explicit Process(std::string &wTitle);
+            explicit ConsoleProcess(std::string &wTitle);
 
-            ~Process();
+            ~ConsoleProcess();
 
             bool Spawn(const std::string &pPath, const std::string &args = "");
 
-            bool IsRunning() const;
+            [[nodiscard]] bool IsRunning() const;
 
             void Kill();
 
-            [[nodiscard]] HANDLE GetWriteHandle() const;
+            void Write(std::string msg) const;
     };
 }

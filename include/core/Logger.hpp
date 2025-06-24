@@ -11,11 +11,13 @@
 #include <mutex>
 #include <fstream>
 
-#include "core/Process.hpp"
+#include "core/ConsoleProcess.hpp"
 
 namespace Core {
     class Logger {
         public:
+            Logger() = delete;
+
             enum class Level { TRACE, INFO, WARNING, ERR };
 
             // We don't really have to create separate logger objects, just make it static
@@ -28,21 +30,19 @@ namespace Core {
 
 
             #define LOG(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::TRACE)
-            #define LOGINFO(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::INFO)
-            #define LOGWARN(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::WARNING)
-            #define LOGERR(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::ERR)
+            #define LOG_INFO(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::INFO)
+            #define LOG_WARN(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::WARNING)
+            #define LOG_ERR(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::ERR)
 
         private:
             [[nodiscard]] static std::string getTimestamp();
 
             [[nodiscard]] static std::string levelToStr(Level lvl) noexcept;
 
-            static void writeToConsole(const std::string &message);
-
             static std::ofstream logFileStream;
             static std::mutex mtx; // thread safe because who knows what will happen in the future
             static bool consoleEnabled;
 
-            static std::unique_ptr<Process> consoleProcess;
+            static std::unique_ptr<ConsoleProcess> consoleProcess;
     };
 }

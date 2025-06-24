@@ -25,7 +25,7 @@ int main() {
 
     Core::Logger::Init("");
 
-    Core::Logger::Log("What", "", "");
+    Core::Logger::Log(CWRAP("awwwwwwwwwwwwwwwwwwwwww", EColor::CYAN), "", "");
 
     std::cin.get();
 

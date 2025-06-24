@@ -19,8 +19,8 @@
 namespace Core {
     std::ofstream Logger::logFileStream;
     std::mutex Logger::mtx;
-    bool Logger::consoleEnabled                     = false;
-    std::unique_ptr<Process> Logger::consoleProcess = nullptr;
+    bool Logger::consoleEnabled                            = false;
+    std::unique_ptr<ConsoleProcess> Logger::consoleProcess = nullptr;
 
 
     void Logger::Init(std::string logFilePath, bool createConsole) {
@@ -31,13 +31,13 @@ namespace Core {
         // Console logging
         if (createConsole) {
             const std::string conTitle = "SCLI LOGS";
-            consoleProcess             = std::make_unique<Process>(const_cast<std::string &>(conTitle));
+            consoleProcess             = std::make_unique<ConsoleProcess>(const_cast<std::string &>(conTitle));
             if (!consoleProcess->Spawn("cmd.exe", "/Q /K")) {
                 std::cout << "fuck" << std::endl;
                 throw std::runtime_error("Failed to spawn logger console");
             }
-            writeToConsole("prompt $e");
-            writeToConsole("cls");
+            consoleProcess->Write("prompt $e");
+            consoleProcess->Write("cls");
 
             Logger::Log("AAAAAAAA", "", "");
 
@@ -49,7 +49,7 @@ namespace Core {
                      Level level) {
         // std::ostringstream oss;
         // oss << "echo " << message;
-        writeToConsole("echo " + message);
+        consoleProcess->Write("echo " + message);
     }
 
     std::string Logger::getTimestamp() {
@@ -74,26 +74,5 @@ namespace Core {
                 return "ERROR";
         }
         return "UNKNOWN";
-    }
-
-    void Logger::writeToConsole(const std::string &message) {
-        if (!consoleProcess || !consoleProcess->IsRunning()) {
-            std::cout << "Attempt to write to console process that is not running" << std::endl;
-            return;
-        }
-
-        DWORD bytesWritten;
-        std::string msgWithNewline = message + "\r\n";
-        BOOL success               = WriteFile(
-                                               consoleProcess->GetWriteHandle(),
-                                               msgWithNewline.c_str(),
-                                               static_cast<DWORD>(msgWithNewline.size()),
-                                               &bytesWritten,
-                                               NULL
-                                              );
-        // std::cout << "MSg info" << std::endl;
-        // std::cout << msgWithNewline << std::endl;
-        // std::cout << success << std::endl;
-        FlushFileBuffers(consoleProcess->GetWriteHandle());
     }
 }

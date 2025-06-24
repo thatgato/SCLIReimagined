@@ -10,15 +10,17 @@
 
 //  Purpose: Abstract a windows.h API related process into a C++ class for later use
 
-#include "core/Process.hpp"
+#include "core/ConsoleProcess.hpp"
+
+#include <iostream>
 
 
 namespace Core {
-    Process::Process(std::string &wTitle) : wTitle(wTitle) {}
+    ConsoleProcess::ConsoleProcess(std::string &wTitle) : wTitle(wTitle) {}
 
-    Process::~Process() { Kill(); }
+    ConsoleProcess::~ConsoleProcess() { Kill(); }
 
-    bool Process::Spawn(const std::string &pPath, const std::string &args) {
+    bool ConsoleProcess::Spawn(const std::string &pPath, const std::string &args) {
         SECURITY_ATTRIBUTES saAttr  = {0};
         saAttr.nLength              = sizeof(SECURITY_ATTRIBUTES);
         saAttr.bInheritHandle       = TRUE;
@@ -37,7 +39,7 @@ namespace Core {
         si.hStdError  = GetStdHandle(STD_ERROR_HANDLE);
         si.hStdInput  = hStdinRead;
 
-        pi = {0};
+        pi = {nullptr};
 
         std::string cmdLine = pPath + " " + args;
 
@@ -57,7 +59,7 @@ namespace Core {
         return true;
     }
 
-    bool Process::IsRunning() const {
+    bool ConsoleProcess::IsRunning() const {
         if (pi.hProcess == nullptr) return false;
 
         DWORD exitCode;
@@ -65,7 +67,7 @@ namespace Core {
         return exitCode == STILL_ACTIVE;
     }
 
-    void Process::Kill() {
+    void ConsoleProcess::Kill() {
         if (pi.hProcess) {
             TerminateProcess(pi.hProcess, 0);
             CloseHandle(pi.hProcess);
@@ -78,5 +80,24 @@ namespace Core {
         if (hStdinWrite) CloseHandle(hStdinWrite);
     }
 
-    HANDLE Process::GetWriteHandle() const { return hStdinWrite; }
+    void ConsoleProcess::Write(std::string msg) const {
+        if (!this->IsRunning()) {
+            std::cout << "Attempt to write to console process that is not running" << std::endl;
+            return;
+        }
+
+        DWORD bytesWritten;
+        std::string msgWithNewline = msg + "\r\n";
+        BOOL success               = WriteFile(
+                                               this->hStdinWrite,
+                                               msgWithNewline.c_str(),
+                                               static_cast<DWORD>(msgWithNewline.size()),
+                                               &bytesWritten,
+                                               NULL
+                                              );
+        // std::cout << "MSg info" << std::endl;
+        // std::cout << msgWithNewline << std::endl;
+        // std::cout << success << std::endl;
+        FlushFileBuffers(this->hStdinWrite);
+    }
 }
