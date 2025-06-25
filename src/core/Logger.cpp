@@ -15,6 +15,9 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <ranges>
+
+#include "core/LogMessages.hpp"
 
 namespace Core {
     std::ofstream Logger::logFileStream;
@@ -38,7 +41,8 @@ namespace Core {
             }
 
 
-            Logger::Log("AAAAAAAA", "", "");
+            LOG(LogMsg::SpawnedConsole);
+            LOG(LogMsg::InitSuccess);
 
             consoleEnabled = true;
         }
@@ -50,6 +54,9 @@ namespace Core {
         // oss << "echo " << message;
         consoleProcess->Write("echo " + message);
     }
+
+    // void Logger::Log(const std::string_view message, const std::string_view fileName, const std::string_view funcName,
+    //                  Level level) { consoleProcess->Write(std::views::join(std::array{std::string_view {"echo "}, message})); }
 
     std::string Logger::getTimestamp() {
         auto now        = std::chrono::system_clock::now();

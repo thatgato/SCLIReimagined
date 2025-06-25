@@ -12,9 +12,12 @@
 
 namespace Core {
     class LogMessages {
-        LogMessages();
+        LogMessages() = delete;
 
-        const static std::string Example;
+        public:
+            inline static const std::string InitSuccess     = "Logger initialized successfully!";
+            inline static const std::string SpawningConsole = "Attempting to spawn console window...";
+            inline static const std::string SpawnedConsole  = "Successfully spawned console window!";
     };
 }
 

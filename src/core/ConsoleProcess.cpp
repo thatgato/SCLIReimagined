@@ -13,7 +13,7 @@
 #include "core/ConsoleProcess.hpp"
 
 #include <iostream>
-
+#include <ranges>
 
 namespace Core {
     ConsoleProcess::ConsoleProcess(std::string &wTitle) : pi(), hStdinRead(nullptr), wTitle(wTitle) {}
@@ -103,4 +103,25 @@ namespace Core {
         // std::cout << success << std::endl;
         FlushFileBuffers(this->hStdinWrite);
     }
+
+    // void ConsoleProcess::Write(std::string_view msg) const { figure out how to make this thing work........
+    //     if (!this->IsRunning()) {
+    //         std::cout << "Attempt to write to console process that is not running" << std::endl;
+    //         return;
+    //     }
+    //
+    //     DWORD bytesWritten;
+    //     std::string_view msgWithNewline = std::views::join(std::array { msg, std::string_view {"\r\n"} });
+    //     BOOL success               = WriteFile(
+    //                                            this->hStdinWrite,
+    //                                            msgWithNewline.data(),
+    //                                            static_cast<DWORD>(msgWithNewline.size()),
+    //                                            &bytesWritten,
+    //                                            NULL
+    //                                           );
+    //     // std::cout << "MSg info" << std::endl;
+    //     // std::cout << msgWithNewline << std::endl;
+    //     // std::cout << success << std::endl;
+    //     FlushFileBuffers(this->hStdinWrite);
+    // }
 }

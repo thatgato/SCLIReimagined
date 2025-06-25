@@ -9,9 +9,3 @@
 //  Created by:
 
 //  Purpose:
-
-
-#include "core/LogMessages.hpp"
-LogMsg::Example=
-"This is an example log message..."; // todo finish
-

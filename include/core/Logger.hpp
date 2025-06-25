@@ -28,6 +28,10 @@ namespace Core {
             static void Log(const std::string message, const std::string fileName, const std::string funcName,
                             Level level = Level::INFO);
 
+            // static void Log(const std::string_view message, const std::string_view fileName,
+            // const std::string_view funcName,
+            // Level level = Level::INFO);
+
 
             #define LOG(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::TRACE)
             #define LOG_INFO(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::INFO)

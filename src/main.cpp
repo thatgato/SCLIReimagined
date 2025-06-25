@@ -22,12 +22,11 @@ int main() {
 
     //app.Startup(argc, argv);
 
-    std::cout << CWRAP("afkdsnf", EColor::RED) << std::endl;
+    std::cout << LogMsg::SpawningConsole << std::endl;
 
     Core::Logger::Init("");
 
-    Core::Logger::Log(CWRAP("awwwwwwwwwwwwwwwwwwwwww", EColor::CYAN), "", "");
-    Core::Logger::Log(LogMsg::Example, "", "");
+    Core::Logger::Log(CWRAP("Hello from logger!", EColor::CYAN), "", "");
 
     std::cin.get();
 
