@@ -10,7 +10,9 @@
 #include <windows.h>
 #include <mutex>
 #include <fstream>
+#include <unordered_map>
 
+#include "Color.hpp"
 #include "core/ConsoleProcess.hpp"
 
 namespace Core {
@@ -25,18 +27,26 @@ namespace Core {
 
             static void Init(std::string logFilePath, bool createConsole = true);
 
-            static void Log(const std::string message, const std::string fileName, const std::string funcName,
-                            Level level = Level::INFO);
+            static void Log(std::string message, std::string fileName, std::string funcName, Level level,
+                            bool overrideMsgColor);
+
 
             // static void Log(const std::string_view message, const std::string_view fileName,
             // const std::string_view funcName,
             // Level level = Level::INFO);
 
+            // lol
+            #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
-            #define LOG(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::TRACE)
-            #define LOG_INFO(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::INFO)
-            #define LOG_WARN(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::WARNING)
-            #define LOG_ERR(msg) Core::Logger::Log(msg, __FILE__, __FUNCTION__, Core::Logger::Level::ERR)
+            #define LOG(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::TRACE, false)
+            #define LOG_INFO(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, false)
+            #define LOG_WARN(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, false)
+            #define LOG_ERR(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, false)
+
+            #define LOG_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::TRACE, true)
+            #define LOG_INFO_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, true)
+            #define LOG_WARN_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, true)
+            #define LOG_ERR_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, true)
 
         private:
             [[nodiscard]] static std::string getTimestamp();
@@ -48,5 +58,7 @@ namespace Core {
             static bool consoleEnabled;
 
             static std::unique_ptr<ConsoleProcess> consoleProcess;
+            static std::unordered_map<Level, EColor> logLvlToColor;
+            static std::unordered_map<Level, std::string> logLvlToStr;
     };
 }

@@ -10,7 +10,7 @@
 
 
 // Made it top level so it's easily accessible from anywhere if this header is included
-enum class EColor { WHITE, GREEN, YELLOW, ORANGE, RED, CYAN, BLUE };
+enum class EColor { WHITE, GREEN, YELLOW, ORANGE, RED, CYAN, BLUE, GRAY };
 
 struct RGB {
     uint8_t r, g, b;

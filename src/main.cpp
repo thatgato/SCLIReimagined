@@ -26,7 +26,10 @@ int main() {
 
     Core::Logger::Init("");
 
-    Core::Logger::Log(CWRAP("Hello from logger!", EColor::CYAN), "", "");
+    LOG("Hello from logger!");
+    LOG_WARN("Warn from logger!");
+    LOG_ERR("Error from logger!");
+    LOG(CWRAP("Hello from logger, with color overrides!", EColor::CYAN));
 
     std::cin.get();
 

@@ -12,6 +12,7 @@
 
 
 #include "core/Logger.hpp"
+#include "core/Logger.hpp"
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -25,6 +26,19 @@ namespace Core {
     bool Logger::consoleEnabled                            = false;
     std::unique_ptr<ConsoleProcess> Logger::consoleProcess = nullptr;
 
+
+    std::unordered_map<Logger::Level, EColor> Logger::logLvlToColor = {
+        {Logger::Level::INFO, EColor::WHITE},
+        {Logger::Level::WARNING, EColor::ORANGE},
+        {Logger::Level::ERR, EColor::RED},
+        {Logger::Level::TRACE, EColor::GRAY},
+    };
+    std::unordered_map<Logger::Level, std::string> Logger::logLvlToStr = {
+        {Logger::Level::INFO, "INFO"},
+        {Logger::Level::WARNING, "WARN"},
+        {Logger::Level::ERR, "ERR"},
+        {Logger::Level::TRACE, "TRACE"},
+    };
 
     void Logger::Init(std::string logFilePath, bool createConsole) {
         // TODO File logging
@@ -49,10 +63,17 @@ namespace Core {
     }
 
     void Logger::Log(const std::string message, const std::string fileName, const std::string funcName,
-                     Level level) {
-        // std::ostringstream oss;
-        // oss << "echo " << message;
-        consoleProcess->Write("echo " + message);
+                     Level level, bool overrideMsgColor = false) {
+        std::string final = "echo ";
+
+        if (overrideMsgColor) {
+            final += "[" + logLvlToStr[level] + "] [" + fileName + "::" + funcName + "]: " + message;
+        } else {
+            final += CWRAP("[" + logLvlToStr[level] + "] [" + fileName + "::" + funcName + "]: " + message,
+                           logLvlToColor[level]);
+        }
+
+        consoleProcess->Write(final);
     }
 
     // void Logger::Log(const std::string_view message, const std::string_view fileName, const std::string_view funcName,

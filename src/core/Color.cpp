@@ -22,6 +22,7 @@ namespace Core {
         {EColor::ORANGE, {255, 105, 0}},
         {EColor::CYAN, {0, 255, 255}},
         {EColor::BLUE, {0, 0, 255}},
+        {EColor::GRAY, {180, 180, 180}},
     };
 
     const std::string terminator = "\033[0m";
