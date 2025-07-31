@@ -83,7 +83,7 @@ namespace Core {
         if (hStdinWrite) CloseHandle(hStdinWrite);
     }
 
-    void ConsoleProcess::Write(std::string msg) const {
+    void ConsoleProcess::Write(const std::string &msg) const {
         if (!this->IsRunning()) {
             std::cout << "Attempt to write to console process that is not running" << std::endl;
             return;
@@ -91,16 +91,13 @@ namespace Core {
 
         DWORD bytesWritten;
         std::string msgWithNewline = msg + "\r\n";
-        BOOL success               = WriteFile(
-                                               this->hStdinWrite,
-                                               msgWithNewline.c_str(),
-                                               static_cast<DWORD>(msgWithNewline.size()),
-                                               &bytesWritten,
-                                               NULL
-                                              );
-        // std::cout << "MSg info" << std::endl;
-        // std::cout << msgWithNewline << std::endl;
-        // std::cout << success << std::endl;
+        WriteFile(
+                  this->hStdinWrite,
+                  msgWithNewline.c_str(),
+                  static_cast<DWORD>(msgWithNewline.size()),
+                  &bytesWritten,
+                  nullptr
+                 );
         FlushFileBuffers(this->hStdinWrite);
     }
 

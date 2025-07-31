@@ -25,7 +25,7 @@ namespace Core {
 
             void Kill();
 
-            void Write(std::string msg) const;
+            void Write(const std::string& msg) const;
 
             // void Write(std::string_view msg) const;
     };

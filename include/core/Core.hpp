@@ -5,14 +5,12 @@
 
 
 #pragma once
-#include <stack>
-#include <memory>
 
 namespace Core {
     class Application {
-        //std::stack<std::weak_ptr<Page> > navStack;
-
         public:
-            void Startup(int argc, char *argv[]);
+            Application() = delete;
+
+            static void Startup(int argc, char *argv[]);
     };
 }

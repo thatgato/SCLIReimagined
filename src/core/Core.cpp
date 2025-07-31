@@ -13,5 +13,5 @@
 #include "core/Core.hpp"
 
 namespace Core {
-    // The code begins here, this is called when main() runs
+    void Application::Startup(int argc, char *argv[]) {}
 }
