@@ -7,7 +7,8 @@
 - Benchmarked calculations
 - Look into the LineNoise library suggested by ChatGPT for autocompletion
 - Constants library (Get them using commands, or possibly an expression parser...?)
--
+- A separate .exe for the logging console, as the current one's capabilities are very lacking, ex.: we can't even print
+  multi-line logs
 
 ## UI
 

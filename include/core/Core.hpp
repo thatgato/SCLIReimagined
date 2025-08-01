@@ -5,12 +5,21 @@
 
 
 #pragma once
+#include <memory>
+#include <vector>
+
+#include "Page.hpp"
 
 namespace Core {
     class Application {
         public:
             Application() = delete;
 
-            static void Startup(int argc, char *argv[]);
+            static void Startup(int argc, char* argv[]);
+
+        private:
+            static std::vector<std::unique_ptr<Page>> m_topLevelPages;
+
+            static void constructPages();
     };
 }

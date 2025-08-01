@@ -9,7 +9,7 @@
 #include "core/Logger.hpp"
 #include "core/LogMessages.hpp"
 
-int main() {
+int main(int argc, char** argv) {
     std::cout << "Application starting..." << std::endl;
 
     // Just to be sure!:)
@@ -18,9 +18,6 @@ int main() {
     GetConsoleMode(hOut, &dwMode);
     SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 
-    //Core::Application app;
-
-    //app.Startup(argc, argv);
 
     std::cout << LogMsg::SpawningConsole << std::endl;
 
@@ -30,6 +27,8 @@ int main() {
     LOG_WARN("Warn from logger!");
     LOG_ERR("Error from logger!");
     LOG(CWRAP("Hello from logger, with color overrides!", EColor::CYAN));
+
+    Core::Application::Startup(argc, argv);
 
     std::cin.get();
 

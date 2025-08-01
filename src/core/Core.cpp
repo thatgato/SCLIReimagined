@@ -12,6 +12,32 @@
 
 #include "core/Core.hpp"
 
+#include <format>
+#include <sstream>
+
+#include "core/Logger.hpp"
+
 namespace Core {
-    void Application::Startup(int argc, char *argv[]) {}
+    std::vector<std::unique_ptr<Page>> Application::m_topLevelPages;
+
+    void Application::constructPages() {
+        // Create and move every page and their commands here.
+        auto TLP_GEOMETRY = std::make_unique<Core::Page>("Geometry");
+        // auto C_VECTOR = std::make_unique<>();
+
+        m_topLevelPages.push_back(std::move(TLP_GEOMETRY));
+    }
+
+    void Application::Startup(int argc, char* argv[]) {
+        LOG("Beginning page construction");
+        constructPages();
+
+        LOG(std::format(
+                "Hi, so apparently we have {} number of pages in the top level registry!",
+                m_topLevelPages.size()));
+        std::ostringstream oss;
+        oss << "Pages in registry sorted by name: ";
+        for (const auto &page: m_topLevelPages) { oss << page->GetName() << "\t"; }
+        LOG(oss.str());
+    }
 }

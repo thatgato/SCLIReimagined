@@ -15,19 +15,22 @@
 #include <string>
 
 
-class BaseCommand {
-    public:
-        explicit BaseCommand(std::string name, BaseCommand *parent = nullptr);
+namespace Core {
+    class Page; // needed because of circular reference
+    class BaseCommand {
+        public:
+            explicit BaseCommand(std::string name, Core::Page* parent = nullptr);
 
-        virtual ~BaseCommand() = default;
+            virtual ~BaseCommand() = default;
 
-        virtual void execute() = 0;
+            virtual void execute() = 0;
 
-        [[nodiscard]] const std::string &getName() const;
+            [[nodiscard]] const std::string& getName() const;
 
-        [[nodiscard]] BaseCommand *getParent() const;
+            [[nodiscard]] Core::Page* getParent() const;
 
-    protected:
-        std::string cmdName;
-        BaseCommand *parent;
-};
+        protected:
+            std::string cmdName;
+            Core::Page* parent;
+    };
+}

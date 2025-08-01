@@ -29,7 +29,7 @@ bool Core::Page::ContainsCommands() const { return !m_commandChildren.empty(); }
 bool Core::Page::ContainsPages() const { return !m_pageChildren.empty(); }
 
 const std::vector<std::unique_ptr<Core::Page>>& Core::Page::GetPages() const { return m_pageChildren; }
-const std::vector<std::unique_ptr<BaseCommand>>& Core::Page::GetCommands() const { return m_commandChildren; }
+const std::vector<std::unique_ptr<Core::BaseCommand>>& Core::Page::GetCommands() const { return m_commandChildren; }
 
 
 
