@@ -19,7 +19,7 @@ namespace Core {
     class Page; // needed because of circular reference
     class BaseCommand {
         public:
-            explicit BaseCommand(std::string name, Core::Page* parent = nullptr);
+            explicit BaseCommand(std::string name, Page* parent = nullptr);
 
             virtual ~BaseCommand() = default;
 
@@ -27,10 +27,10 @@ namespace Core {
 
             [[nodiscard]] const std::string& getName() const;
 
-            [[nodiscard]] Core::Page* getParent() const;
+            [[nodiscard]] Page* getParent() const;
 
         protected:
-            std::string cmdName;
-            Core::Page* parent;
+            std::string m_cmdName;
+            Page* m_parent;
     };
 }

@@ -18,9 +18,21 @@ namespace Core {
 
             void SetDesc(std::string desc);
 
-            void AddChildPage(std::unique_ptr<Page> child);
+            template<typename T, typename... Args>
+            T* AddChild(Args &&... args) {
+                constexpr bool baseOfCmd  = std::is_base_of_v<BaseCommand, T>;
+                constexpr bool baseOfPage = std::is_base_of_v<Page, T>;
+                static_assert(baseOfCmd || baseOfPage,
+                              "You can only add a child to a page if it derives from BaseCommand or BasePage.");
 
-            void AddChildCommand(std::unique_ptr<BaseCommand> child);
+                // this forwarding stuff is cool, look into it later
+                auto child = std::make_unique<T>(std::forward<Args>(args)..., this);
+                auto ptr   = child.get();
+                if constexpr (baseOfCmd == true) { m_commandChildren.push_back(std::move(child)); } else {
+                    m_pageChildren.push_back(std::move(child));
+                }
+                return ptr;
+            }
 
             [[nodiscard]] Page* GetParent() const;
 
@@ -34,10 +46,10 @@ namespace Core {
 
             [[nodiscard]] const std::vector<std::unique_ptr<BaseCommand>>& GetCommands() const;
 
-        private:
+        protected:
             std::string m_name;
             Page* m_parent;
-            std::string m_desc = "No description provided. The developer was too lazy >.>";
+            std::string m_desc = "No description provided, I was too lazy";
             std::vector<std::unique_ptr<Page>> m_pageChildren;
             std::vector<std::unique_ptr<BaseCommand>> m_commandChildren;
     };

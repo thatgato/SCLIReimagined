@@ -18,10 +18,6 @@ Core::Page::Page(std::string name, Page* parent) : m_name(std::move(name)), m_pa
 
 void Core::Page::SetDesc(std::string desc) { m_desc = std::move(desc); }
 
-
-void Core::Page::AddChildPage(std::unique_ptr<Page> child) { m_pageChildren.push_back(std::move(child)); }
-void Core::Page::AddChildCommand(std::unique_ptr<BaseCommand> child) { m_commandChildren.push_back(std::move(child)); }
-
 Core::Page* Core::Page::GetParent() const { return m_parent; }
 const std::string& Core::Page::GetName() const { return m_name; }
 

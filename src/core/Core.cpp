@@ -13,17 +13,23 @@
 #include "core/Core.hpp"
 
 #include <format>
+#include <iostream>
 #include <sstream>
 
+#include "commands/geometry/Vector.hpp"
 #include "core/Logger.hpp"
+#include "internal/util/GeneralUtil.hpp"
 
 namespace Core {
     std::vector<std::unique_ptr<Page>> Application::m_topLevelPages;
 
     void Application::constructPages() {
         // Create and move every page and their commands here.
-        auto TLP_GEOMETRY = std::make_unique<Core::Page>("Geometry");
-        // auto C_VECTOR = std::make_unique<>();
+        auto TLP_GEOMETRY = std::make_unique<Page>("Geometry");
+        auto TestPage     = TLP_GEOMETRY->AddChild<Page>("asdas");
+        TestPage->AddChild<Commands::Geometry::Vector>("Vector");
+
+        std::cout << Internal::Util::DescendantsToString(TLP_GEOMETRY.get());
 
         m_topLevelPages.push_back(std::move(TLP_GEOMETRY));
     }
@@ -36,7 +42,7 @@ namespace Core {
                 "Hi, so apparently we have {} number of pages in the top level registry!",
                 m_topLevelPages.size()));
         std::ostringstream oss;
-        oss << "Pages in registry sorted by name: ";
+        oss << "Pages in registry: ";
         for (const auto &page: m_topLevelPages) { oss << page->GetName() << "\t"; }
         LOG(oss.str());
     }

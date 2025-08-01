@@ -15,8 +15,8 @@
 
 #include "../../include/core/BaseCommand.hpp"
 
-Core::BaseCommand::BaseCommand(std::string name, Core::Page* parent)
-    : cmdName(std::move(name)), parent(parent) {}
+Core::BaseCommand::BaseCommand(std::string name, Page* parent)
+    : m_cmdName(std::move(name)), m_parent(parent) {}
 
-const std::string& Core::BaseCommand::getName() const { return cmdName; }
-Core::Page* Core::BaseCommand::getParent() const { return parent; }
+const std::string& Core::BaseCommand::getName() const { return m_cmdName; }
+Core::Page* Core::BaseCommand::getParent() const { return m_parent; }
