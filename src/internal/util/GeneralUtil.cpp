@@ -15,28 +15,37 @@
 #include <iostream>
 
 namespace Internal {
-    // TODO: Figure out!!! im too tired:(
-    std::string Util::DescendantsToString(const Core::Page* classToList, uint8_t depth) {
-        std::cout << "assing " << classToList->GetName();
+    std::string Util::DescendantsToString(const Core::Page* classToList, uint16_t indent) {
+        std::ostringstream stringStream;
 
+        if (!classToList) return "";
 
+        // Print current page
+        stringStream << generateIdent(indent) << "Page: " << classToList->GetName() << "\n";
+
+        // Print commands in this page
+        if (classToList->ContainsCommands()) {
+            stringStream << generateIdent(indent + 1) << "Commands:\n";
+            for (const auto &cmd: classToList->GetCommands()) {
+                stringStream << generateIdent(indent + 2) << "- " << cmd->getName() << "\n";
+            }
+        }
+
+        // Recurse into child pages
+        if (classToList->ContainsPages()) {
+            stringStream << generateIdent(indent + 1) << "Child Pages:\n";
+            for (const auto &page: classToList->GetPages()) {
+                stringStream << DescendantsToString(page.get(), indent + 2); // recursive call
+            }
+        }
+
+        return stringStream.str();
+    }
+
+    std::string Util::generateIdent(uint16_t depth) {
         std::ostringstream stringStream;
         for (int i = 0; i < depth; ++i)
             stringStream << "  ";
-        stringStream << classToList->GetName();
-
-        if (classToList->ContainsPages()) {
-            for (const auto &page: classToList->GetPages()) {
-                stringStream << DescendantsToString(page.get(), depth + 1) << std::endl;
-            }
-        } else if (classToList->ContainsCommands()) {
-            for (auto &cmd: classToList->GetCommands()) {
-                for (int i = 0; i < depth; ++i)
-                    stringStream << "  ";
-                stringStream << cmd->getName() << std::endl;
-            }
-        }
-        stringStream << std::endl;
         return stringStream.str();
     }
 }
