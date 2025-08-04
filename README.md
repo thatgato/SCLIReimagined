@@ -27,3 +27,5 @@ remake it, because it got very messy very quickly, furthermore, it was my first 
 such size.*
 
 *Feel free to point out mistakes or possible improvements in the issues tab!*
+
+Certain planned features might not exist in the final release!
