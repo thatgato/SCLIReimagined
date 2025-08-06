@@ -12,6 +12,13 @@
 #include "Page.hpp"
 
 namespace Core {
+    enum class EParseResult {
+        PAGE_SELECT,
+        INTERNAL_COMMAND,
+        INVALID
+    };
+
+
     class Application {
         public:
             Application() = delete;
@@ -20,10 +27,16 @@ namespace Core {
 
         private:
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
-            static std::unordered_map<int, Page *> m_pagesInSelection;
+            static std::unordered_map<int, Page*> m_pagesInSelection;
 
             static void constructPages();
 
             static void setPageSelection(const std::vector<std::unique_ptr<Page>> &pages);
+
+            static std::string listen();
+
+            static EParseResult parse(std::string &input);
+
+            static bool validateParseResult(EParseResult result);
     };
 }

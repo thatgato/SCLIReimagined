@@ -22,7 +22,7 @@
 
 namespace Core {
     std::vector<std::unique_ptr<Page>> Application::m_topLevelPages;
-    std::unordered_map<int, Page *> Application::m_pagesInSelection;
+    std::unordered_map<int, Page*> Application::m_pagesInSelection;
 
     void Application::Startup(int argc, char* argv[]) {
         LOG("Beginning page construction");
@@ -58,4 +58,20 @@ namespace Core {
             std::cout << std::format("{}: {}", i, page->GetName()) << std::endl;
         }
     }
+
+    std::string Application::listen() {
+        std::cout << ">> ";
+        std::string line;
+        std::getline(std::cin, line);
+        return line;
+    }
+
+    EParseResult Application::parse(std::string &input) {
+        // First try to see if its an internal command
+        // TODO
+        // Then try to see if its a page selection command
+        
+    }
+
+    bool Application::validateParseResult(EParseResult result) {}
 }
