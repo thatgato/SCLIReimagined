@@ -22,17 +22,7 @@
 
 namespace Core {
     std::vector<std::unique_ptr<Page>> Application::m_topLevelPages;
-
-    void Application::constructPages() {
-        // Create and move every page and their commands here.
-        auto TLP_GEOMETRY = std::make_unique<Page>("Geometry");
-        auto TestPage     = TLP_GEOMETRY->AddChild<Page>("asdas");
-        TestPage->AddChild<Commands::Geometry::Vector>("Vector");
-
-        std::cout << Internal::Util::DescendantsToString(TLP_GEOMETRY.get());
-
-        m_topLevelPages.push_back(std::move(TLP_GEOMETRY));
-    }
+    std::unordered_map<int, Page *> Application::m_pagesInSelection;
 
     void Application::Startup(int argc, char* argv[]) {
         LOG("Beginning page construction");
@@ -45,5 +35,27 @@ namespace Core {
         oss << "Pages in registry: ";
         for (const auto &page: m_topLevelPages) { oss << page->GetName() << "\t"; }
         LOG(oss.str());
+
+        // Display top pages
+        std::cout << "Displaying top-level pages:" << std::endl;
+        setPageSelection(m_topLevelPages);
+    }
+
+    void Application::constructPages() {
+        // Create and move every page and their commands here.
+        auto TLP_GEOMETRY = std::make_unique<Page>("Geometry");
+        TLP_GEOMETRY->AddChild<Commands::Geometry::Vector>("Vector");
+
+        std::cout << Internal::Util::DescendantsToString(TLP_GEOMETRY.get());
+
+        m_topLevelPages.push_back(std::move(TLP_GEOMETRY));
+    }
+
+    void Application::setPageSelection(const std::vector<std::unique_ptr<Page>> &pages) {
+        int i = 1;
+        for (auto &page: pages) {
+            m_pagesInSelection[i] = page.get(); // update the current page selection map for selecting later
+            std::cout << std::format("{}: {}", i, page->GetName()) << std::endl;
+        }
     }
 }

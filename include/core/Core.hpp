@@ -6,6 +6,7 @@
 
 #pragma once
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "Page.hpp"
@@ -19,7 +20,10 @@ namespace Core {
 
         private:
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
+            static std::unordered_map<int, Page *> m_pagesInSelection;
 
             static void constructPages();
+
+            static void setPageSelection(const std::vector<std::unique_ptr<Page>> &pages);
     };
 }

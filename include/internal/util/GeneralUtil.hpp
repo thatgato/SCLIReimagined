@@ -15,6 +15,6 @@ namespace Internal {
             static std::string DescendantsToString(const Core::Page* classToList, uint16_t indent = 0);
 
         private:
-            static std::string generateIdent(uint16_t depth = 0);
+            static std::string generateIndent(uint16_t depth = 0);
     };
 }

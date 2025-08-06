@@ -21,19 +21,19 @@ namespace Internal {
         if (!classToList) return "";
 
         // Print current page
-        stringStream << generateIdent(indent) << "Page: " << classToList->GetName() << "\n";
+        stringStream << generateIndent(indent) << "Page: " << classToList->GetName() << "\n";
 
         // Print commands in this page
         if (classToList->ContainsCommands()) {
-            stringStream << generateIdent(indent + 1) << "Commands:\n";
+            stringStream << generateIndent(indent + 1) << "Commands:\n";
             for (const auto &cmd: classToList->GetCommands()) {
-                stringStream << generateIdent(indent + 2) << "- " << cmd->getName() << "\n";
+                stringStream << generateIndent(indent + 2) << "- " << cmd->getName() << "\n";
             }
         }
 
         // Recurse into child pages
         if (classToList->ContainsPages()) {
-            stringStream << generateIdent(indent + 1) << "Child Pages:\n";
+            stringStream << generateIndent(indent + 1) << "Child Pages:\n";
             for (const auto &page: classToList->GetPages()) {
                 stringStream << DescendantsToString(page.get(), indent + 2); // recursive call
             }
@@ -42,7 +42,7 @@ namespace Internal {
         return stringStream.str();
     }
 
-    std::string Util::generateIdent(uint16_t depth) {
+    std::string Util::generateIndent(uint16_t depth) {
         std::ostringstream stringStream;
         for (int i = 0; i < depth; ++i)
             stringStream << "  ";
