@@ -15,7 +15,7 @@ namespace Core {
     enum class EParseResult {
         PAGE_SELECT,
         INTERNAL_COMMAND,
-        INVALID
+        OTHER_OR_INVALID
     };
 
 

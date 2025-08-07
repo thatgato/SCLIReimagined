@@ -70,7 +70,10 @@ namespace Core {
         // First try to see if its an internal command
         // TODO
         // Then try to see if its a page selection command
-        
+        int res;
+        if (Util::TryParseInt(input, res)) {
+            if (m_pagesInSelection.contains(res)) { LOG("Valid page selection argument found; todo implement this"); }
+        }
     }
 
     bool Application::validateParseResult(EParseResult result) {}

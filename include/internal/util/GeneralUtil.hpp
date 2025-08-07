@@ -14,7 +14,11 @@ namespace Internal {
         public:
             static std::string DescendantsToString(const Core::Page* classToList, uint16_t indent = 0);
 
+            static bool TryParseInt(const std::string &str, int &outValue);
+
         private:
             static std::string generateIndent(uint16_t depth = 0);
     };
 }
+
+using Util = Internal::Util;

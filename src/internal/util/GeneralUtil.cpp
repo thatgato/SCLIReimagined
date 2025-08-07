@@ -13,6 +13,7 @@
 #include "util/GeneralUtil.hpp"
 
 #include <iostream>
+#include <charconv>
 
 namespace Internal {
     std::string Util::DescendantsToString(const Core::Page* classToList, uint16_t indent) {
@@ -40,6 +41,11 @@ namespace Internal {
         }
 
         return stringStream.str();
+    }
+
+    bool Util::TryParseInt(const std::string &str, int &outValue) {
+        auto result = std::from_chars(str.data(), str.data() + str.size(), outValue);
+        return result.ec == std::errc() && result.ptr == str.data() + str.size();
     }
 
     std::string Util::generateIndent(uint16_t depth) {
