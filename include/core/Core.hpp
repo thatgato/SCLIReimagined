@@ -16,9 +16,19 @@ namespace Core {
         PAGE_SELECT,
         COMMAND_SELECT,
         INTERNAL_COMMAND,
-        OTHER_OR_INVALID
+        ACTIVE_CMD_ARG,
+        ESCAPE,
+        INVALID,
     };
 
+    struct ApplicationFlags {
+        bool isInCommandMode;
+        BaseCommand* currentActiveCommand;
+    };
+
+    struct CoreLoopData {
+        EParseResult prevParseResult;
+    };
 
     class Application {
         public:
@@ -30,8 +40,9 @@ namespace Core {
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
             static std::unordered_map<int, Page*> m_pagesInSelection;
             static std::unordered_map<int, BaseCommand*> m_commandsInSelection;
+            static ApplicationFlags m_applicationFlags;
 
-            static void coreLoop();
+            static void coreLoop(CoreLoopData loopData, bool firstRun = false);
 
             static void constructPages();
 
@@ -41,7 +52,7 @@ namespace Core {
 
             static std::string listen();
 
-            static EParseResult parse(std::string &input);
+            static EParseResult parse(const std::string &input);
 
             static bool validateParseResult(EParseResult result);
     };

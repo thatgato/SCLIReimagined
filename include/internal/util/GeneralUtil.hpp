@@ -16,6 +16,8 @@ namespace Internal {
 
             static bool TryParseInt(const std::string &str, int &outValue);
 
+            static void StrLower(std::string &outStr);
+
         private:
             static std::string generateIndent(uint16_t depth = 0);
     };

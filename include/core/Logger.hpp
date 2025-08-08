@@ -39,14 +39,14 @@ namespace Core {
             #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
             #define LOG(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::TRACE, false)
-            #define LOG_INFO(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, false)
-            #define LOG_WARN(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, false)
-            #define LOG_ERR(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, false)
+            #define LOGI(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, false)
+            #define LOGW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, false)
+            #define LOGE(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, false)
 
-            #define LOG_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::TRACE, true)
-            #define LOG_INFO_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, true)
-            #define LOG_WARN_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, true)
-            #define LOG_ERR_OW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, true)
+            #define LOGOW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::TRACE, true)
+            #define LOGIOW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::INFO, true)
+            #define LOGWOW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::WARNING, true)
+            #define LOGEOW(msg) Core::Logger::Log(msg, __FILENAME__, __FUNCTION__, Core::Logger::Level::ERR, true)
 
         private:
             [[nodiscard]] static std::string getTimestamp();

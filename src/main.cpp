@@ -24,8 +24,8 @@ int main(int argc, char** argv) {
     Core::Logger::Init("");
 
     LOG("Hello from logger!");
-    LOG_WARN("Warn from logger!");
-    LOG_ERR("Error from logger!");
+    LOGW("Warn from logger!");
+    LOGE("Error from logger!");
     LOG(CWRAP("Hello from logger, with color overrides!", EColor::CYAN));
 
     Core::Application::Startup(argc, argv);

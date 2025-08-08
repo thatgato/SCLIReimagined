@@ -15,5 +15,12 @@
 #include "core/Logger.hpp"
 
 namespace Commands::Geometry {
-    void Vector::execute() { LOG("Vector command executed"); }
+    void Vector::setup() { LOG("Vector cmd setup called"); }
+
+    Core::ECommandResult Vector::tick(std::string &input) {
+        LOG("Vector command executed with args "+ input);
+        return Core::ECommandResult::OK;
+    }
+
+    void Vector::exit() { LOG("Exitting vector cmd"); }
 }

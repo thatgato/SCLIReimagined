@@ -48,6 +48,11 @@ namespace Internal {
         return result.ec == std::errc() && result.ptr == str.data() + str.size();
     }
 
+    void Util::StrLower(std::string &outStr) {
+        std::transform(outStr.begin(), outStr.end(), outStr.begin(),
+                       [](unsigned char c) { return std::tolower(c); });
+    }
+
     std::string Util::generateIndent(uint16_t depth) {
         std::ostringstream stringStream;
         for (int i = 0; i < depth; ++i)

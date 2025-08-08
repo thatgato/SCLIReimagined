@@ -16,6 +16,11 @@
 
 
 namespace Core {
+    enum class ECommandResult {
+        OK,
+        FORCE_EXIT // not sure if we will need this as of rn
+    };
+
     class Page; // needed because of circular reference
     class BaseCommand {
         public:
@@ -23,7 +28,11 @@ namespace Core {
 
             virtual ~BaseCommand() = default;
 
-            virtual void execute() = 0;
+            virtual void setup() = 0;
+
+            virtual ECommandResult tick(std::string &input) = 0;
+
+            virtual void exit() = 0;
 
             [[nodiscard]] const std::string& GetName() const;
 
