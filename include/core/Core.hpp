@@ -14,6 +14,7 @@
 namespace Core {
     enum class EParseResult {
         PAGE_SELECT,
+        COMMAND_SELECT,
         INTERNAL_COMMAND,
         OTHER_OR_INVALID
     };
@@ -28,10 +29,15 @@ namespace Core {
         private:
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
             static std::unordered_map<int, Page*> m_pagesInSelection;
+            static std::unordered_map<int, BaseCommand*> m_commandsInSelection;
+
+            static void coreLoop();
 
             static void constructPages();
 
-            static void setPageSelection(const std::vector<std::unique_ptr<Page>> &pages);
+            static void setupPageChildSelection(const Page* page);
+
+            static void setupPageChildSelection(const std::vector<std::unique_ptr<Page>> &page);
 
             static std::string listen();
 

@@ -25,7 +25,7 @@ namespace Core {
 
             virtual void execute() = 0;
 
-            [[nodiscard]] const std::string& getName() const;
+            [[nodiscard]] const std::string& GetName() const;
 
             [[nodiscard]] Page* getParent() const;
 

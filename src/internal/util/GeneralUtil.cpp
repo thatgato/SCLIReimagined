@@ -28,7 +28,7 @@ namespace Internal {
         if (classToList->ContainsCommands()) {
             stringStream << generateIndent(indent + 1) << "Commands:\n";
             for (const auto &cmd: classToList->GetCommands()) {
-                stringStream << generateIndent(indent + 2) << "- " << cmd->getName() << "\n";
+                stringStream << generateIndent(indent + 2) << "- " << cmd->GetName() << "\n";
             }
         }
 
