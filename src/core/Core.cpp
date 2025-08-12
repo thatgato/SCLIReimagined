@@ -23,14 +23,14 @@
 
 namespace Core {
     std::vector<std::unique_ptr<Page>> Application::m_topLevelPages;
-    std::unordered_map<int, Page*> Application::m_pagesInSelection;
+    std::unordered_map<int, const Page*> Application::m_pagesInSelection;
     std::unordered_map<int, BaseCommand*> Application::m_commandsInSelection;
     ApplicationFlags Application::m_applicationFlags = {
         false,
         nullptr
     };
 
-    std::queue<Page*> Application::m_pageQueue;
+    std::queue<const Page*> Application::m_pageQueue;
 
     void Application::Startup(int argc, char* argv[]) {
         LOG("Beginning page construction");
@@ -51,54 +51,62 @@ namespace Core {
 
     // might create a struct for data from the previous loop; especially for transporting info about the back command etc
     void Application::coreLoop(CoreLoopData loopData, bool firstRun) {
-        EParseResult parseRes = loopData.prevParseResult;
+        ParseResult parseResult = loopData.prevParseResult;
         if (firstRun) {
             // This runs the first time after startup; so we show the top level pages for selection
             std::cout << "Displaying top-level pages:" << std::endl;
             setupPageChildSelection(m_topLevelPages);
         }
         std::string listenRes = listen();
-        parseRes              = parse(listenRes);
+        parseResult           = parse(listenRes);
 
         if (listenRes.empty()) {
             // ignore empty str -> redo the loop
-            coreLoop({parseRes});
+            coreLoop({parseResult});
             return;
         }
 
         // Listen; main loop here
-        switch (parseRes) {
-            case EParseResult::PAGE_SELECT:
-                coreLoop({parseRes});
+        switch (parseResult.parseRes) {
+            case EParseResult::PAGE_SELECT: // currentpage flag is modified when setupPageChildSelection is called
+                setupPageChildSelection(parseResult.pageToLoad);
+                coreLoop({parseResult});
                 break;
             case EParseResult::COMMAND_SELECT:
+                m_applicationFlags.currentActiveCommand = parseResult.commandToLoad;
                 m_applicationFlags.isInCommandMode = true;
                 // clear the console
                 std::system("cls");
                 m_applicationFlags.currentActiveCommand->setup();
-                coreLoop({parseRes});
+                coreLoop({parseResult});
                 break;
             case EParseResult::ACTIVE_CMD_ARG:
 
                 m_applicationFlags.currentActiveCommand->tick(listenRes);
-                coreLoop({parseRes});
+                coreLoop({parseResult});
                 break;
             case EParseResult::INTERNAL_COMMAND:
                 break;
             case EParseResult::ESCAPE:
+                // TODO!!
                 LOGW("Escaped.");
                 break;
             case EParseResult::INVALID:
                 LOGW("Invalid parsing.");
-                coreLoop({parseRes});
+                coreLoop({parseResult});
                 break;
             case EParseResult::BACK:
-                LOG("Backed from the page. Continuing operation as normal");
-                coreLoop({parseRes});
+                LOG("Backed from page: " + parseResult.pageBackedFrom->GetName() + "; Continuing operation as normal");
+
+                if (parseResult.pageToLoad == nullptr) { setupPageChildSelection(m_topLevelPages); } else {
+                    setupPageChildSelection(parseResult.pageToLoad);
+                }
+
+                coreLoop({parseResult});
                 break;
             case EParseResult::NO_OP:
                 LOGI("No operation.");
-                coreLoop({parseRes});
+                coreLoop({parseResult});
                 break;
         }
     }
@@ -116,6 +124,8 @@ namespace Core {
     void Application::setupPageChildSelection(const Page* page) {
         m_commandsInSelection.clear();
         m_pagesInSelection.clear();
+        m_applicationFlags.currentPage = page;
+        m_pageQueue.push(page);
         int i = 1;
         if (page->ContainsPages()) {
             std::cout << "Available Pages:" << std::endl;
@@ -140,7 +150,8 @@ namespace Core {
     }
 
     void Application::setupPageChildSelection(const std::vector<std::unique_ptr<Page>> &page) {
-        int i = 1;
+        m_applicationFlags.currentPage = nullptr;
+        int i                          = 1;
         for (auto &childPage: page) {
             m_pagesInSelection[i] = childPage.get(); // update the current page selection map for selecting later
 
@@ -156,55 +167,56 @@ namespace Core {
         return line;
     }
 
-    EParseResult Application::parse(const std::string &input) {
+    ParseResult Application::parse(const std::string &input) {
         std::string inputLower = input;
         Util::StrLower(inputLower); // turns inputLower into all lowercase
         // First try to see if its an internal command
         // TODO
         // Then try to see if its a page selection command
 
-        if (inputLower == "e" || inputLower == "exit") { return EParseResult::ESCAPE; }
+        if (inputLower == "e" || inputLower == "exit") { return {.parseRes = EParseResult::ESCAPE}; }
+        // on escape we should exit() on currentcmd and load the previous (pagequeue.front)
         if ((inputLower == "b" || inputLower == "back") && !m_applicationFlags.isInCommandMode) {
             if (m_pageQueue.empty()) {
                 LOGW("Tried to back from the top-level");
-                return EParseResult::NO_OP;
+                return {.parseRes = EParseResult::NO_OP};
             }
+
+            const Page* pageWeAreBackingFrom = m_applicationFlags.currentPage;
+
             m_pageQueue.pop();
             if (m_pageQueue.empty()) {
-                setupPageChildSelection(m_topLevelPages);
-                return EParseResult::BACK;
+                return {.parseRes = EParseResult::BACK, .pageBackedFrom = pageWeAreBackingFrom};
+                // pagetoload = nullptr --> load toplevel
             }
-            setupPageChildSelection(m_pageQueue.front());
-            return EParseResult::BACK;
+            return {
+                .parseRes = EParseResult::BACK, .pageToLoad = m_pageQueue.front(),
+                .pageBackedFrom = pageWeAreBackingFrom
+            };
         }
-        if (m_applicationFlags.isInCommandMode) { return EParseResult::ACTIVE_CMD_ARG; }
+        if (m_applicationFlags.isInCommandMode) { return {.parseRes = EParseResult::ACTIVE_CMD_ARG}; }
 
 
-        int res; // this thing is kinda forced to be here instead of the switch statement in the core loop
-        // if its too bad then do smth about it but for now i think its okay
-
+        int res;
         if (Util::TryParseInt(input, res)) {
             if (m_pagesInSelection.contains(res)) {
-                Page* selectedPage = m_pagesInSelection[res];
+                const Page* selectedPage = m_pagesInSelection[res];
 
                 LOG("Valid page selection argument found");
 
                 if (selectedPage->ContainsPages() || selectedPage->ContainsCommands()) {
-                    setupPageChildSelection(selectedPage);
-                    m_pageQueue.push(selectedPage);
-                    return EParseResult::PAGE_SELECT;
+                    return {.parseRes = EParseResult::PAGE_SELECT, .pageToLoad = selectedPage};
                 }
 
                 throw std::runtime_error("Invalid page selection; The page has no children.");
             }
             if (m_commandsInSelection.contains(res)) {
                 LOG("Valid command selection argument found");
-                m_applicationFlags.currentActiveCommand = m_commandsInSelection[res];
-                return EParseResult::COMMAND_SELECT;
+                return {.parseRes = EParseResult::COMMAND_SELECT, .commandToLoad = m_commandsInSelection[res]};
             }
-            return EParseResult::INVALID;
-        } else { return EParseResult::INVALID; }
+            return {.parseRes = EParseResult::INVALID};
+        } else { return {.parseRes = EParseResult::INVALID}; }
     }
 
-    bool Application::validateParseResult(EParseResult result) {}
+    bool Application::validateParseResult(EParseResult result) { return false; }
 }

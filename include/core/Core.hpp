@@ -27,11 +27,21 @@ namespace Core {
     struct ApplicationFlags {
         bool isInCommandMode;
         BaseCommand* currentActiveCommand;
+        const Page* currentPage;
+    };
+
+    struct ParseResult {
+        EParseResult parseRes;
+        const Page* pageToLoad = nullptr;
+        // const std::vector<std::unique_ptr<Page>> &listOfPagesToLoad; -> might need later; not now tho; just assume to load top level if the pagetoload is nullptr on a back or pageselect parse result
+        const Page* pageBackedFrom = nullptr;
+        BaseCommand* commandToLoad = nullptr;
     };
 
     struct CoreLoopData {
-        EParseResult prevParseResult;
+        ParseResult prevParseResult;
     };
+
 
     class Application {
         public:
@@ -41,9 +51,9 @@ namespace Core {
 
         private:
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
-            static std::unordered_map<int, Page*> m_pagesInSelection;
+            static std::unordered_map<int, const Page*> m_pagesInSelection;
             static std::unordered_map<int, BaseCommand*> m_commandsInSelection;
-            static std::queue<Page*> m_pageQueue;
+            static std::queue<const Page*> m_pageQueue;
             static ApplicationFlags m_applicationFlags;
 
             static void coreLoop(CoreLoopData loopData, bool firstRun = false);
@@ -56,7 +66,7 @@ namespace Core {
 
             static std::string listen();
 
-            static EParseResult parse(const std::string &input);
+            static ParseResult parse(const std::string &input);
 
             static bool validateParseResult(EParseResult result);
     };
