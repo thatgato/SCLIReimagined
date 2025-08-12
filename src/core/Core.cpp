@@ -15,6 +15,7 @@
 #include <format>
 #include <iostream>
 #include <sstream>
+#include <queue>
 
 #include "commands/geometry/Vector.hpp"
 #include "core/Logger.hpp"
@@ -28,6 +29,8 @@ namespace Core {
         false,
         nullptr
     };
+
+    std::queue<Page*> Application::m_pageQueue;
 
     void Application::Startup(int argc, char* argv[]) {
         LOG("Beginning page construction");
@@ -56,6 +59,13 @@ namespace Core {
         }
         std::string listenRes = listen();
         parseRes              = parse(listenRes);
+
+        if (listenRes.empty()) {
+            // ignore empty str -> redo the loop
+            coreLoop({parseRes});
+            return;
+        }
+
         // Listen; main loop here
         switch (parseRes) {
             case EParseResult::PAGE_SELECT:
@@ -63,10 +73,13 @@ namespace Core {
                 break;
             case EParseResult::COMMAND_SELECT:
                 m_applicationFlags.isInCommandMode = true;
+                // clear the console
+                std::system("cls");
                 m_applicationFlags.currentActiveCommand->setup();
                 coreLoop({parseRes});
                 break;
             case EParseResult::ACTIVE_CMD_ARG:
+
                 m_applicationFlags.currentActiveCommand->tick(listenRes);
                 coreLoop({parseRes});
                 break;
@@ -77,6 +90,15 @@ namespace Core {
                 break;
             case EParseResult::INVALID:
                 LOGW("Invalid parsing.");
+                coreLoop({parseRes});
+                break;
+            case EParseResult::BACK:
+                LOG("Backed from the page. Continuing operation as normal");
+                coreLoop({parseRes});
+                break;
+            case EParseResult::NO_OP:
+                LOGI("No operation.");
+                coreLoop({parseRes});
                 break;
         }
     }
@@ -142,22 +164,41 @@ namespace Core {
         // Then try to see if its a page selection command
 
         if (inputLower == "e" || inputLower == "exit") { return EParseResult::ESCAPE; }
+        if ((inputLower == "b" || inputLower == "back") && !m_applicationFlags.isInCommandMode) {
+            if (m_pageQueue.empty()) {
+                LOGW("Tried to back from the top-level");
+                return EParseResult::NO_OP;
+            }
+            m_pageQueue.pop();
+            if (m_pageQueue.empty()) {
+                setupPageChildSelection(m_topLevelPages);
+                return EParseResult::BACK;
+            }
+            setupPageChildSelection(m_pageQueue.front());
+            return EParseResult::BACK;
+        }
         if (m_applicationFlags.isInCommandMode) { return EParseResult::ACTIVE_CMD_ARG; }
 
 
-        int res;
+        int res; // this thing is kinda forced to be here instead of the switch statement in the core loop
+        // if its too bad then do smth about it but for now i think its okay
+
         if (Util::TryParseInt(input, res)) {
             if (m_pagesInSelection.contains(res)) {
                 Page* selectedPage = m_pagesInSelection[res];
-                LOG("Valid page selection argument found; todo implement this");
+
+                LOG("Valid page selection argument found");
+
                 if (selectedPage->ContainsPages() || selectedPage->ContainsCommands()) {
                     setupPageChildSelection(selectedPage);
+                    m_pageQueue.push(selectedPage);
                     return EParseResult::PAGE_SELECT;
                 }
+
                 throw std::runtime_error("Invalid page selection; The page has no children.");
             }
             if (m_commandsInSelection.contains(res)) {
-                LOG("Valid command selection argument found; todo implement this");
+                LOG("Valid command selection argument found");
                 m_applicationFlags.currentActiveCommand = m_commandsInSelection[res];
                 return EParseResult::COMMAND_SELECT;
             }

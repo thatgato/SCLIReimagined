@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <__fwd/queue.h>
 
 #include "Page.hpp"
 
@@ -18,7 +19,9 @@ namespace Core {
         INTERNAL_COMMAND,
         ACTIVE_CMD_ARG,
         ESCAPE,
+        BACK,
         INVALID,
+        NO_OP
     };
 
     struct ApplicationFlags {
@@ -40,6 +43,7 @@ namespace Core {
             static std::vector<std::unique_ptr<Page>> m_topLevelPages;
             static std::unordered_map<int, Page*> m_pagesInSelection;
             static std::unordered_map<int, BaseCommand*> m_commandsInSelection;
+            static std::queue<Page*> m_pageQueue;
             static ApplicationFlags m_applicationFlags;
 
             static void coreLoop(CoreLoopData loopData, bool firstRun = false);
