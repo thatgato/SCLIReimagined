@@ -70,6 +70,7 @@ namespace Core {
         switch (parseResult.parseRes) {
             case EParseResult::PAGE_SELECT: // currentpage flag is modified when setupPageChildSelection is called
                 setupPageChildSelection(parseResult.pageToLoad);
+                m_pageQueue.push(parseResult.pageToLoad);
                 coreLoop({parseResult});
                 break;
             case EParseResult::COMMAND_SELECT:
@@ -88,8 +89,20 @@ namespace Core {
             case EParseResult::INTERNAL_COMMAND:
                 break;
             case EParseResult::ESCAPE:
-                // TODO!!
-                LOGW("Escaped.");
+
+                if (!m_applicationFlags.isInCommandMode) {
+                    LOGI("Exiting application");
+                    std::exit(0);
+                }
+
+                LOGI("Escaped. Calling exit on current command!");
+
+                m_applicationFlags.isInCommandMode = false;
+                m_applicationFlags.currentActiveCommand->exit();
+                m_applicationFlags.currentActiveCommand = nullptr;
+
+                setupPageChildSelection(m_applicationFlags.currentPage);
+                coreLoop({parseResult});
                 break;
             case EParseResult::INVALID:
                 LOGW("Invalid parsing.");
@@ -97,8 +110,8 @@ namespace Core {
                 break;
             case EParseResult::BACK:
                 LOG("Backed from page: " + parseResult.pageBackedFrom->GetName() + "; Continuing operation as normal");
-
                 if (parseResult.pageToLoad == nullptr) { setupPageChildSelection(m_topLevelPages); } else {
+                    LOG("Loading " + parseResult.pageToLoad->GetName());
                     setupPageChildSelection(parseResult.pageToLoad);
                 }
 
@@ -125,7 +138,7 @@ namespace Core {
         m_commandsInSelection.clear();
         m_pagesInSelection.clear();
         m_applicationFlags.currentPage = page;
-        m_pageQueue.push(page);
+
         int i = 1;
         if (page->ContainsPages()) {
             std::cout << "Available Pages:" << std::endl;
@@ -185,6 +198,8 @@ namespace Core {
             const Page* pageWeAreBackingFrom = m_applicationFlags.currentPage;
 
             m_pageQueue.pop();
+            LOG("Page queue popped");
+
             if (m_pageQueue.empty()) {
                 return {.parseRes = EParseResult::BACK, .pageBackedFrom = pageWeAreBackingFrom};
                 // pagetoload = nullptr --> load toplevel
