@@ -7,13 +7,13 @@
 #pragma once
 #include <string>
 
-#include <windows.h>
 #include <mutex>
 #include <fstream>
 #include <unordered_map>
 
 #include "Color.hpp"
-#include "core/ConsoleProcess.hpp"
+#include "ConsoleProcess.hpp"
+
 
 namespace Core {
     class Logger {

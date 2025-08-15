@@ -16,6 +16,8 @@ namespace Commands::Geometry {
             explicit Vector(std::string name, Core::Page* parent)
                 : BaseCommand(std::move(name), parent) {}
 
+            void init() override;
+
             void setup() override;
 
             Core::ECommandResult tick(std::string &input) override;

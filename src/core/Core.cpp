@@ -129,7 +129,7 @@ namespace Core {
         auto TLP_GEOMETRY = std::make_unique<Page>("Geometry");
         TLP_GEOMETRY->AddChild<Commands::Geometry::Vector>("Vector");
 
-        std::cout << Internal::Util::DescendantsToString(TLP_GEOMETRY.get());
+        std::cout << TLP_GEOMETRY->DescendantsToString();
 
         m_topLevelPages.push_back(std::move(TLP_GEOMETRY));
     }

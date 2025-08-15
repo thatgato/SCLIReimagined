@@ -35,6 +35,8 @@ namespace Core {
 
             virtual ~BaseCommand() = default;
 
+            virtual void init() = 0;
+
             virtual void setup() = 0;
 
             virtual ECommandResult tick(std::string &input) = 0;
@@ -49,6 +51,8 @@ namespace Core {
             std::string m_cmdName;
             Page* m_parent;
 
+            std::unordered_map<std::string,
+                               std::function<void(const std::vector<std::string> &)>> m_subCommands;
 
             // I'm going to put the code explanation here in comments because I did not understand this at first
             template<typename... Args> // template with ..., self-explanatory, variadic arguments

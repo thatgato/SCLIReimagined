@@ -11,6 +11,7 @@
 
 #include "BaseCommand.hpp"
 
+
 namespace Core {
     class Page {
         public:
@@ -45,6 +46,8 @@ namespace Core {
             [[nodiscard]] const std::vector<std::unique_ptr<Page>>& GetPages() const;
 
             [[nodiscard]] const std::vector<std::unique_ptr<BaseCommand>>& GetCommands() const;
+
+            [[nodiscard]] std::string DescendantsToString(uint16_t indent = 0) const;
 
         protected:
             std::string m_name;

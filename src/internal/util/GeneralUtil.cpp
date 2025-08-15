@@ -12,37 +12,13 @@
 
 #include "util/GeneralUtil.hpp"
 
-#include <iostream>
 #include <charconv>
+#include <iostream>
+
+#include "../../../include/core/Logger.hpp"
+
 
 namespace Internal {
-    std::string Util::DescendantsToString(const Core::Page* classToList, uint16_t indent) {
-        std::ostringstream stringStream;
-
-        if (!classToList) return "";
-
-        // Print current page
-        stringStream << generateIndent(indent) << "Page: " << classToList->GetName() << "\n";
-
-        // Print commands in this page
-        if (classToList->ContainsCommands()) {
-            stringStream << generateIndent(indent + 1) << "Commands:\n";
-            for (const auto &cmd: classToList->GetCommands()) {
-                stringStream << generateIndent(indent + 2) << "- " << cmd->GetName() << "\n";
-            }
-        }
-
-        // Recurse into child pages
-        if (classToList->ContainsPages()) {
-            stringStream << generateIndent(indent + 1) << "Child Pages:\n";
-            for (const auto &page: classToList->GetPages()) {
-                stringStream << DescendantsToString(page.get(), indent + 2); // recursive call
-            }
-        }
-
-        return stringStream.str();
-    }
-
     bool Util::TryParseInt(const std::string &str, int &outValue) {
         auto result = std::from_chars(str.data(), str.data() + str.size(), outValue);
         return result.ec == std::errc() && result.ptr == str.data() + str.size();
@@ -53,7 +29,47 @@ namespace Internal {
                        [](unsigned char c) { return std::tolower(c); });
     }
 
-    std::string Util::generateIndent(uint16_t depth) {
+    void Util::StrUpper(std::string &outStr) {
+        std::transform(outStr.begin(), outStr.end(), outStr.begin(),
+                       [](unsigned char c) { return std::toupper(c); });
+    }
+
+    std::vector<std::string> Util::StrSplit(const std::string &str, char delimiter) {
+        std::vector<std::string> tokens;
+        size_t start = 0;
+        size_t end   = str.find(delimiter);
+        while (end != std::string::npos) {
+            tokens.push_back(str.substr(start, end - start));
+            start = end + 1;
+            end   = str.find(delimiter, start);
+        }
+
+        tokens.push_back(str.substr(start));
+        return tokens;
+    }
+
+    CmdArgParseResult Util::ParseAlreadySplitCmdArgs(const std::vector<std::string> &args) {
+        CmdArgParseResult result;
+        for (size_t i = 0; i < args.size(); ++i) {
+            const std::string &a = args[i];
+
+            if (a.rfind("--", 0) == 0) {
+                // starts with --
+                std::string optName = a.substr(2);
+                std::string value;
+                // Optionally consume next argument if it doesn't start with "-"
+                if (i + 1 < args.size() && args[i + 1][0] != '-') { value = args[++i]; }
+                LOG("Option: " + optName + ", value:" + value);
+            } else if (a.rfind("-", 0) == 0) {
+                // starts with -
+                std::string flagName = a.substr(1);
+                LOG("Flag: " + flagName);
+            } else { LOG("Positional: " + a); }
+        }
+        return result;
+    }
+
+    std::string Util::GenerateIndent(uint16_t depth) {
         std::ostringstream stringStream;
         for (int i = 0; i < depth; ++i)
             stringStream << "  ";
