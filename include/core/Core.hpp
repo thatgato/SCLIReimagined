@@ -39,7 +39,7 @@ namespace Core {
     };
 
     struct CoreLoopData {
-        ParseResult prevParseResult;
+        ParseResult prevParseResult; // todo: make this be a reference cuz the parse result's size is kind of big
     };
 
 

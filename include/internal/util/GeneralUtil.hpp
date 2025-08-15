@@ -18,6 +18,17 @@ namespace Internal {
 
             static void StrLower(std::string &outStr);
 
+
+            template<typename T>
+            std::tuple<bool, T> TryParseFromStr(const std::string &s) {
+                std::istringstream iss(s);
+                T value{};
+                if (!(iss >> value)) {
+                    return {false, T{}}; // failed, return default-constructed T
+                }
+                return {true, value};
+            }
+
         private:
             static std::string generateIndent(uint16_t depth = 0);
     };
